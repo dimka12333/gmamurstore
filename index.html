@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Гламур</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Магазин косметики "Гламур"</h1>
+        <nav>
+            <a href="index.html">Сторінка 1</a>
+            <a href="index2.html">Сторінка 2</a> <!-- Посилання на другу сторінку -->
+            <a href="#" id="cart-icon"> 🛒 (<span id="cart-count">0</span>)</a>
+        </nav>
+    </header>
+
+    <div class="filter">
+        <label for="price-filter">Filter по ціні:</label>
+        <select id="price-filter">
+            <option value="all">Все</option>
+            <option value="low">До 100 грн</option>
+            <option value="medium">100-400 грн</option>
+            <option value="high">Більше 400 грн</option>
+        </select>
+
+        <label for="gender-filter">Filter за гендером:</label>
+        <select id="gender-filter">
+            <option value="all">Всі</option>
+            <option value="male">Чоловче</option>
+            <option value="female">Жіноче</option>
+        </select>
+    </div>
+<!-- Модальне вікно для перегляду товару -->
+<div id="product-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="modal-info"></div>
+    </div>
+</div>
+
+<!-- Модальне вікно для кошика -->
+<div id="cart-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-cart">&times;</span>
+        <div id="cart-items"></div>
+        <button id="checkout-button">Оформити замовлення</button>
+    </div>
+</div>
+
+<!-- Модальне вікно для оформлення замовлення -->
+<div id="checkout-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-checkout">&times;</span>
+        <form id="checkout-form">
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+            <button type="submit">Замовити</button>
+        </form>
+    </div>
+</div>
+    <main id="product-list">
+        <!-- Нові товари для другої сторінки -->
+        <div class="product-card" data-id="1" data-price="100" data-gender="female">
+            <img src="product1.jpg" alt="Продукт 1">
+            <h3>Туш для вій</h3>
+            <p>100.00 грн</p>
+            <button class="view-details" data-id="1">Детальніше</button>
+            <button class="add-to-cart" data-id="1">Додати до кошика</button>
+        </div>
+        <div class="product-card" data-id="2" data-price="400" data-gender="male">
+            <img src="product2.jpg" alt="Продукт 2">
+            <h3>Чоловічий шампунь "Твердий Чугун"</h3>
+            <p>400.00 грн</p>
+            <button class="view-details" data-id="2">Детальніше</button>
+            <button class="add-to-cart" data-id="2">Додати до кошика</button>
+        </div>
+        <div class="product-card" data-id="3" data-price="50" data-gender="female">
+            <img src="product3.jpg" alt="Продукт 3" width="160" height="50">
+            <h3>Помада</h3>
+            <p>50.00 грн</p>
+            <button class="view-details" data-id="3">Детальніше</button>
+            <button class="add-to-cart" data-id="3">Додати до кошика</button>
+        </div>
+        <div class="product-card" data-id="4" data-price="900" data-gender="male">
+            <img src="product4.jpg" alt="Продукт 4">
+            <h3>Парфум чоловічий</h3>
+            <p>900.00 грн</p>
+            <button class="view-details" data-id="4">Детальніше</button>
+            <button class="add-to-cart" data-id="4">Додати до кошика</button>
+        </div>
+        <div class="product-card" data-id="5" data-price="150" data-gender="female">
+            <img src="product5.jpg" alt="Продукт 5">
+            <h3>Палетка тіней</h3>
+            <p>150.00 грн</p>
+            <button class="view-details" data-id="5">Детальніше</button>
+            <button class="add-to-cart" data-id="5">Додати до кошика</button>
+        </div>
+    </main>
+
+    <!-- Модальні вікна для товарів та кошика, як і на першій сторінці -->
+
+    <footer>
+        <p>&copy; 2024 Cosmetics Store. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const priceFilter = document.getElementById('price-filter');
+        const genderFilter = document.getElementById('gender-filter');
+        const productCards = document.querySelectorAll('.product-card');
+    
+        function loadFilters() {
+            const savedPrice = localStorage.getItem('priceFilter');
+            const savedGender = localStorage.getItem('genderFilter');
+    
+            if (savedPrice) {
+                priceFilter.value = savedPrice;
+            }
+            if (savedGender) {
+                genderFilter.value = savedGender;
+            }
+        }
+    
+        function filterProducts() {
+            const selectedPrice = priceFilter.value;
+            const selectedGender = genderFilter.value;
+    
+            localStorage.setItem('priceFilter', selectedPrice);
+            localStorage.setItem('genderFilter', selectedGender);
+    
+            productCards.forEach(card => {
+                const price = parseFloat(card.getAttribute('data-price'));
+                const gender = card.getAttribute('data-gender');
+    
+                let priceMatch = (selectedPrice === 'all') ||
+                    (selectedPrice === 'low' && price < 100) ||
+                    (selectedPrice === 'medium' && price >= 100 && price <= 400) ||
+                    (selectedPrice === 'high' && price > 400);
+                
+                let genderMatch = (selectedGender === 'all') || (gender === selectedGender);
+    
+                card.style.display = (priceMatch && genderMatch) ? 'block' : 'none';
+            });
+        }
+    
+        window.onload = () => {
+            loadFilters();
+            filterProducts();
+        };
+    
+        priceFilter.addEventListener('change', filterProducts);
+        genderFilter.addEventListener('change', filterProducts);
+    </script>
+    
+<script src="script.js"></script>
+</body>
+</html>
